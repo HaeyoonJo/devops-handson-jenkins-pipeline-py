@@ -32,12 +32,11 @@ pipeline {
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
         stage("Deploy Dev") {
             // when {branch "dev"}
-            // when {
-            //     ${env.GIT_BRANCH} == 'origin/dev'
-            // }
+            when {
+                ${env.GIT_BRANCH} == 'origin/dev'
+            }
             steps {
                 echo "Checking branch name: ${env.GIT_BRANCH} \n printing ENV params.."
-                sh 'env'
                 retry(3) {
                     echo 'Deploying into dev..'
                 }
@@ -45,7 +44,9 @@ pipeline {
         }
 
         stage("Deploy Prod") {
-            when {branch "master"}
+            when {
+                ${env.GIT_BRANCH} == 'origin/master'
+            }
             steps {
                 retry(3) {
                     // sh './deploy/deployment_prod.sh'
