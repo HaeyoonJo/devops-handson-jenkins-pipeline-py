@@ -30,12 +30,21 @@ pipeline {
         }
 
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
-        stage("Deploy") {
+        stage("Deploy Dev") {
+            when {branch "dev"}
+            steps {
+                retry(3) {
+                    echo 'Deploying into dev..'
+                }
+            }
+        }
+
+        stage("Deploy Prod") {
             when {branch "master"}
             steps {
                 retry(3) {
                     // sh './deploy/deployment_prod.sh'
-                    echo 'Deploying..'
+                    echo 'Deploying into prod..'
                 }
             }
         }
