@@ -33,7 +33,7 @@ pipeline {
         stage("Deploy Dev") {
             // when {branch "dev"}
             when {
-                ${env.GIT_BRANCH} == 'origin/dev'
+                "${env.GIT_BRANCH}" == 'origin/dev'
             }
             steps {
                 echo "Checking branch name: ${env.GIT_BRANCH} \n printing ENV params.."
@@ -44,9 +44,7 @@ pipeline {
         }
 
         stage("Deploy Prod") {
-            when {
-                ${env.GIT_BRANCH} == 'origin/master'
-            }
+            // when {branch "master"}
             steps {
                 retry(3) {
                     // sh './deploy/deployment_prod.sh'
