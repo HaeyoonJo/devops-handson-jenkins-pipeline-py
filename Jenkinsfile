@@ -34,7 +34,8 @@ pipeline {
             when {branch "master"}
             steps {
                 retry(3) {
-                    sh './deploy/deployment_prod.sh'
+                    // sh './deploy/deployment_prod.sh'
+                    echo 'Deploying..'
                 }
             }
         }
