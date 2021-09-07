@@ -33,8 +33,11 @@ pipeline {
         stage("Deploy") {
             when {branch "master"}
             steps {
+                sh 'env'
+                echo "BRANCH NAME IS ${ENV_NAME}"
                 retry(3) {
-                    sh './deploy/deployment_prod.sh'
+                    // sh './deploy/deployment_prod.sh'
+                    echo 'Deploy into prod..'
                 }
             }
         }
