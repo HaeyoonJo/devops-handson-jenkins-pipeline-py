@@ -10,7 +10,7 @@ pipeline {
     agent any
 
     environment {
-        ENV_NAME = "${env.BRANCH_NAME}"
+        BRANCH = "${env.GIT_BRANCH}"
         ENV_VARIABLE_EXAMPLE = "env var in jenkins pipeline"
     }
 
@@ -30,16 +30,13 @@ pipeline {
         }
 
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
+        // https://www.jenkins.io/blog/2017/01/19/converting-conditional-to-pipeline/
         stage("Deploy Dev") {
-            // when {branch "dev"}
             when {
-                expression {
-                    "${env.GIT_BRANCH}" == 'origin/dev'
-                }
-                
+                expression { "${BRANCH}" == 'origin/dev' }
             }
             steps {
-                echo "Checking branch name: ${env.GIT_BRANCH} \n printing ENV params.."
+                echo "check variables >> \n variable_example: ${variable_example}, \n ENV_VARIABLE_EXAMPLE: ${ENV_VARIABLE_EXAMPLE}"
                 retry(3) {
                     echo 'Deploying into dev..'
                 }
@@ -47,7 +44,9 @@ pipeline {
         }
 
         stage("Deploy Prod") {
-            // when {branch "master"}
+            when {
+                expression { "${BRANCH}" == 'origin/master' }
+            }
             steps {
                 retry(3) {
                     // sh './deploy/deployment_prod.sh'
@@ -55,6 +54,5 @@ pipeline {
                 }
             }
         }
-
     }
 }
