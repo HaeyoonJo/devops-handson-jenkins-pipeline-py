@@ -29,7 +29,7 @@ pipeline {
 
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
         stage("Deploy") {
-            when {branch "master"}
+            // when {branch "master"}
             steps {
                 sh 'env'
                 echo "BRANCH NAME IS ${ENV_NAME}"
