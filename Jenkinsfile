@@ -36,7 +36,7 @@ pipeline {
             //     ${env.GIT_BRANCH} == 'origin/dev'
             // }
             steps {
-                sh "${env.GIT_BRANCH}"
+                echo "Checking branch name: ${env.GIT_BRANCH} \n printing ENV params.."
                 sh 'env'
                 retry(3) {
                     echo 'Deploying into dev..'
