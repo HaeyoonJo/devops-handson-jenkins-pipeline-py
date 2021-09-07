@@ -3,11 +3,11 @@ see https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#creating-a-jenkinsfile
     https://jenkins.io/doc/book/pipeline/syntax/
 */
 
+// define variables
+def variable_example = "def var jenkins pipeline"
+
 pipeline {
     agent any
-    
-    // define variables
-    def variable_example = "def var jenkins pipeline"
 
     environment {
         ENV_NAME = "${env.BRANCH_NAME}"
