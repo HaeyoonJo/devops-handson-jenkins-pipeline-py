@@ -17,7 +17,7 @@ pipeline {
         LAMBDA_FUNCTION = "devops-lambda-pipeline"
         TEST_BUILD_IMAGE = "devops_lambda/test"
         TEST_LOCAL_IMAGE = ""
-        
+        MAP_PORT = 8080
     }
 
     stages {
@@ -41,12 +41,12 @@ pipeline {
             steps {
                 script {
                     sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
-                    testLocalImage.withRun("-p 8080:8080 --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name lambda_test") {c ->
+                    testLocalImage.withRun("-p ${MAP_PORT}:${MAP_PORT} --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name ${LAMBDA_FUNCTION}") {c ->
                         sh 'sleep 5'
                         sh 'docker ps'
                         sh """
-                        docker exec -i lambda_test \
-                            curl -l "http://0.0.0.0:8080/2015-03-31/functions/function/invocations" \
+                        docker exec -i ${LAMBDA_FUNCTION} \
+                            curl -l "http://0.0.0.0:${MAP_PORT}/2015-03-31/functions/function/invocations" \
                             -H \"Accept:application/json\" \
                             -d '{"jenkins": "Jenkins test by devops"}'
                         """
