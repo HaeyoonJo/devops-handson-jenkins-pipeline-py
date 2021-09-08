@@ -42,7 +42,7 @@ pipeline {
                 script {
                     sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
                     testLocalImage.withRun("-p ${MAP_PORT}:${MAP_PORT} --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name ${LAMBDA_FUNCTION}") {c ->
-                        sh 'sleep 5'
+                        // sh 'sleep 5'
                         sh 'docker ps'
                         sh """
                         docker exec -i ${LAMBDA_FUNCTION} \
