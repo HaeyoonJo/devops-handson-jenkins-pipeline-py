@@ -37,24 +37,24 @@ pipeline {
             }
         }
 
-        // stage("Test") {
-        //     steps {
-        //         script {
-        //             sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
-        //             "${TEST_LOCAL_IMAGE}".withRun("-p 8080:8080 --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name lambda_test") {c ->
-        //                 sh 'sleep 5'
-        //                 sh 'docker ps'
-        //                 sh """
-        //                 docker exec -i lambda_test \
-        //                     curl -l "http://0.0.0.0:8080/2015-03-31/functions/function/invocations" \
-        //                     -H \"Accept:application/json\" \
-        //                     -d '{"jenkins": "Jenkins test by devops"}'
-        //                 """
-        //             }
-        //         }
-        //         sh "docker network rm ${DOCKER_NETWORK}"
-        //     }
-        // }
+        stage("Test") {
+            steps {
+                script {
+                    sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
+                    testLocalImage.withRun("-p 8080:8080 --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name lambda_test") {c ->
+                        sh 'sleep 5'
+                        sh 'docker ps'
+                        sh """
+                        docker exec -i lambda_test \
+                            curl -l "http://0.0.0.0:8080/2015-03-31/functions/function/invocations" \
+                            -H \"Accept:application/json\" \
+                            -d '{"jenkins": "Jenkins test by devops"}'
+                        """
+                    }
+                }
+                sh "docker network rm ${DOCKER_NETWORK}"
+            }
+        }
 
         // run aws-cli by "withAWS" plugin
         // stage("Connect AWS") {
