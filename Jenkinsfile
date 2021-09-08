@@ -12,9 +12,12 @@ pipeline {
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         DOCKER_NETWORK = "lambda_net"
+        DOCKER_NETWORK_ALIAS = 'lambda'
 
+        LAMBDA_FUNCTION = "devops-lambda-pipeline"
         TEST_BUILD_IMAGE = "devops_lambda/test"
-
+        TEST_LOCAL_IMAGE = ""
+        
     }
 
     stages {
@@ -22,9 +25,28 @@ pipeline {
         stage("Build") {
             steps {
                 script {
-                    testLocalImage = docker.build("${TEST_BUILD_IMAGE}:0.1")
+                    "${TEST_LOCAL_IMAGE}" = docker.build("${TEST_BUILD_IMAGE}:0.1")
                     sh 'docker images'
                 }
+            }
+        }
+
+        stage("Test") {
+            steps {
+                script {
+                    sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
+                    "${TEST_LOCAL_IMAGE}".withRun("-p 8080:8080 --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name lambda_test") {c ->
+                        sh 'sleep 5'
+                        sh 'docker ps'
+                        sh """
+                        docker exec -i lambda_test \
+                            curl -l "http://0.0.0.0:8080/2015-03-31/functions/function/invocations" \
+                            -H \"Accept:application/json\" \
+                            -d '{"jenkins": "Jenkins test by devops"}'
+                        """
+                    }
+                }
+                sh "docker network rm ${DOCKER_NETWORK}"
             }
         }
 
