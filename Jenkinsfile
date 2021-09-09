@@ -31,7 +31,8 @@ pipeline {
 
         stage("CheckParams") {
             steps {
-                echo "from parameter: ${params.account_id}"
+                echo "Account ID: ${params.account_id}"
+                echo "Jenkins Credential: ${params.jenkins_credential}"
             }
         }
 
