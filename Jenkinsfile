@@ -10,12 +10,14 @@ pipeline {
     agent any
 
     parameters {
-        string(name: "testAccountId", description: "TEST AWS accountID")
+        string(name: "account_id", description: "AWS accountID")
+        string(name: "jenkins_credential", description: "Jenkins Credential")
     }
 
     environment {
         BRANCH = "${env.GIT_BRANCH}"
-        
+        ACCOUNT_ID = "${account_id}"
+
         VERSION_DEV = "0.1"
 
         DOCKER_NETWORK = "lambda_net"
@@ -30,7 +32,8 @@ pipeline {
 
         stage("CheckParams") {
             steps {
-                echo "${params.testAccountId}"
+                echo "from parameter: ${account_id}"
+                echo "from environment: ${ACCOUNT_ID}"
             }
         }
 
