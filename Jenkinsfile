@@ -59,6 +59,8 @@ pipeline {
                 expression { "${BRANCH}" == 'origin/dev' }
             }
             steps {
+                sh 'env'
+                echo "BRANCH NAME IS ${ENV_NAME}"
                 retry(3) {
                     echo 'Deploying into dev..'
                 }
