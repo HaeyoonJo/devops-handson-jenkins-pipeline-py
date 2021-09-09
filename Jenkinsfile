@@ -52,12 +52,6 @@ pipeline {
             }
         }
 
-        // stage("checking BRANCH") {
-        //     steps {
-        //         echo "${BRANCH}"
-        //     }
-        // }
-
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
         // https://www.jenkins.io/blog/2017/01/19/converting-conditional-to-pipeline/
         stage("Deploy Dev") {
