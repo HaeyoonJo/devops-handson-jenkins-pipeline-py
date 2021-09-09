@@ -15,6 +15,8 @@ pipeline {
 
     environment {
         BRANCH = "${env.GIT_BRANCH}"
+        
+        VERSION_DEV = "0.1"
 
         DOCKER_NETWORK = "lambda_net"
         DOCKER_NETWORK_ALIAS = "lambda"
