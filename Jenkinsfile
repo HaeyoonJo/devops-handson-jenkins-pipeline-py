@@ -33,12 +33,12 @@ pipeline {
             2. Docker container connection refused
                 check the issue by visiting https://github.com/HaeyoonJo/devops-handson-jenkins-pipeline-py/issues/1#issue-991363016
         */
-        stage("Test") {
+        stage("RIE Test") {
             steps {
                 script {
                     sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
                     testLocalImage.withRun("-p ${MAP_PORT}:${MAP_PORT} --network-alias ${DOCKER_NETWORK_ALIAS} --net ${DOCKER_NETWORK} --name ${LAMBDA_FUNCTION}") {c ->
-                        // sh 'sleep 5' 
+                        // sh 'sleep 5'
                         sh 'docker ps'
                         sh """
                         docker exec -i ${LAMBDA_FUNCTION} \
@@ -52,6 +52,12 @@ pipeline {
             }
         }
 
+        stage("checking BRANCH") {
+            steps {
+                echo "${BRANCH}"
+            }
+        }
+
         // see branch strategy by visiting https://www.jenkins.io/doc/tutorials/build-a-multibranch-pipeline-project/#add-deliver-and-deploy-stages-to-your-pipeline
         // https://www.jenkins.io/blog/2017/01/19/converting-conditional-to-pipeline/
         stage("Deploy Dev") {
@@ -59,7 +65,6 @@ pipeline {
                 expression { "${BRANCH}" == 'origin/dev' }
             }
             steps {
-                echo "check variables >> \n variable_example: ${variable_example}"
                 retry(3) {
                     echo 'Deploying into dev..'
                 }
