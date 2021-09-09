@@ -16,7 +16,6 @@ pipeline {
 
     environment {
         BRANCH = "${env.GIT_BRANCH}"
-        ACCOUNT_ID = "${params.account_id}"
 
         VERSION_DEV = "0.1"
 
@@ -33,7 +32,6 @@ pipeline {
         stage("CheckParams") {
             steps {
                 echo "from parameter: ${params.account_id}"
-                echo "from environment: ${ACCOUNT_ID}"
             }
         }
 
