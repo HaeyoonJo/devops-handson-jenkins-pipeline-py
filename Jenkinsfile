@@ -108,6 +108,7 @@ pipeline {
                     docker.withRegistry("http://${params.account_id}.${REGISTRY_ECR_REPO}") {
                         def myImage = docker.build("${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}")
                         myImage.push ("${VERSION}")
+                    }
                 }
             }
         }
