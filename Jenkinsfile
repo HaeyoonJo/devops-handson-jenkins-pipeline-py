@@ -73,7 +73,7 @@ pipeline {
 
         stage("Login ECR") {
             when {
-                expression { "${BRANCH}" == 'origin/dev' }
+                // expression { "${BRANCH}" == 'origin/master' }
             }
             steps {
                 withAWS(credentials: "${params.jenkins_credential}") {
