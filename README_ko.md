@@ -24,3 +24,24 @@ Scripted 문법은 유연하게 프로그래밍적으로 접근이 가능하도�
         width: 1000px;
     }
 </style> -->
+
+### 각 pipeline 단계별 설명
+
+1. Build
+
+- [Docker pipeline](https://plugins.jenkins.io/docker-workflow/)의 `docker.build()` 메소드를 사용하여 도커이미지를 빌드한다.
+
+2. RIE Test
+
+- 어플리케이션을 Dockerfile를 통해 도커라이징한 후, AWS에서 제공하는 `public.ecr.aws/lambda/python` 도커 이미지를 사용하여 [RIE( Runtime Interface Emulator )](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html) Lambda 컨테이너 이미지를 테스트한다.
+
+3. Login ECR
+
+- aws-pipeline의 `withAWS()` 메소드를 사용하여, `sh` 블록안에서 AWS ECR 레파지토리로 로그인하는 aws-cli를 실행한다. 해당 명령문은 ECR 콘솔에서 "푸쉬 명령 보기" 팝업창에서 복사했으며, 다음과 같은 구조로 명령을 실행할 수 있다.
+```
+aws ecr get-login-password \
+    --region "YOUR_REGION" \
+    | docker login \
+    --username AWS \
+    --password-stdin "YOUR ECR REPO URI"
+```
