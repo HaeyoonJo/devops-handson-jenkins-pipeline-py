@@ -24,7 +24,7 @@ pipeline {
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
-        registry = "orcahaeyoon/jenkins_repo"
+        REGISTRY = "orcahaeyoon/jenkins_repo"
         VERSION = "latest"
         VERSION_DEV = "0.1"
         DOCKER_NETWORK = "lambda_net"
@@ -33,7 +33,7 @@ pipeline {
         TEST_BUILD_IMAGE = "devops_lambda/test"
         MAP_PORT = 8080
 
-        BUILD_NUMBER = 0.1
+        BUILD_NUMBER = 0.2
 
     }
 
@@ -96,32 +96,13 @@ pipeline {
         //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
         // dev:
         //  Push image into docker registry on Github
-        // stage("PushImageRegistry") {
-        //     when {
-        //         expression { "${BRANCH}" == 'origin/dev' }
-        //     }
-        //     steps {
-        //         script {
-        //             // set docker registry on another EC2 or local docker container
-        //             docker.withRegistry("http://${REGISTRY_ECR_REPO_DEV}:5000") {
-        //                 def myImage = docker.build("${REGISTRY_ECR_REPO_DEV}:5000/lambda_function")
-        //                 myImage.push("${VERSION_DEV}")
-        //             }
-        //         }
-        //     }
-        // }
-
-        stage("build img dockerhub") {
-            steps {
-                script {
-                    dockerHubImage = docker.build registry + ":$BUILD_NUMBER"
-                }
+        stage("Deploy Image Registry") {
+            when {
+                expression { "${BRANCH}" == 'origin/dev' }
             }
-        }
-
-        stage("deploy image dockerhub") {
             steps {
                 script {
+                    dockerHubImage = docker.build REGISTRY + ":$BUILD_NUMBER"
                     docker.withRegistry('', "${params.dockerhub_credential}") {
                         dockerHubImage.push()
                     }
@@ -131,7 +112,7 @@ pipeline {
 
         // Prod:
         //  Push image into ECR
-        stage("PushImageECR") {
+        stage("Deploy Image ECR") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
@@ -147,7 +128,7 @@ pipeline {
 
         // Prod:
         //  Deploy on Lambda
-        stage("Deploy") {
+        stage("Deploy Lambda") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
