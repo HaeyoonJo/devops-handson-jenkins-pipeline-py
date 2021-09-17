@@ -23,7 +23,7 @@ pipeline {
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
-        REGISTRY_ECR_REPO_DEV = "34.246.121.175"
+        registry = "34.246.121.175"
         VERSION = "latest"
         VERSION_DEV = "0.1"
         DOCKER_NETWORK = "lambda_net"
@@ -32,6 +32,7 @@ pipeline {
         TEST_BUILD_IMAGE = "devops_lambda/test"
         MAP_PORT = 8080
 
+        BUILD_NUMBER = 0.1
 
     }
 
@@ -94,16 +95,35 @@ pipeline {
         //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
         // dev:
         //  Push image into docker registry on Github
-        stage("PushImageRegistry") {
-            when {
-                expression { "${BRANCH}" == 'origin/dev' }
-            }
+        // stage("PushImageRegistry") {
+        //     when {
+        //         expression { "${BRANCH}" == 'origin/dev' }
+        //     }
+        //     steps {
+        //         script {
+        //             // set docker registry on another EC2 or local docker container
+        //             docker.withRegistry("http://${REGISTRY_ECR_REPO_DEV}:5000") {
+        //                 def myImage = docker.build("${REGISTRY_ECR_REPO_DEV}:5000/lambda_function")
+        //                 myImage.push("${VERSION_DEV}")
+        //             }
+        //         }
+        //     }
+        // }
+
+        // TEST docker registry
+        stage("Build img registry") {
             steps {
                 script {
-                    // set docker registry on another EC2 or local docker container
-                    docker.withRegistry("http://${REGISTRY_ECR_REPO_DEV}:5000") {
-                        def myImage = docker.build("localhost:5000/lambda_function")
-                        myImage.push("${VERSION_DEV}")
+                    registryImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
+        stage("deploy image registry") {
+            steps {
+                script {
+                    docker.withRegistry() {
+                        registryImage.push()
                     }
                 }
             }
