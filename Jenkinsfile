@@ -115,7 +115,7 @@ pipeline {
         stage("deploy image registry") {
             steps {
                 script {
-                    docker.withRegistry("orcahaeyoon/jenkins_repo", ${params.dockerhub_credential}) {
+                    docker.withRegistry("orcahaeyoon/jenkins_repo", "${params.dockerhub_credential}") {
                         def registryImage = docker.build("devops_lambda:0.4")
                         /* Push the container to the custom Registry */
                         registryImage.push()
