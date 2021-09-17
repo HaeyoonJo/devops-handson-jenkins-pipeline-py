@@ -18,6 +18,7 @@ pipeline {
         string(name: "account_id", description: "AWS accountID")
         string(name: "jenkins_credential", description: "Jenkins Credential")
         string(name: "ecr_repo_name", description: "ECR Repo name")
+        string(name: "dockerhub_credential", description: "DockerHub Credential")
     }
 
     environment {
@@ -111,18 +112,13 @@ pipeline {
         //     }
         // }
 
-
         stage("deploy image registry") {
             steps {
                 script {
-                    // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
-                    docker.withRegistry("http://0.0.0.0:5000") {
+                    docker.withRegistry("orcahaeyoon/jenkins_repo", ${params.dockerhub_credential}) {
                         def registryImage = docker.build("devops_lambda:0.4")
-
-                        sh 'docker images'
-                        sh 'docker tag devops_lambda:0.4 0.0.0.0:5000/devops_labmda:latest'
-                        sh 'docker ps'
-                        sh 'docker push 0.0.0.0:5000/devops_labmda:latest'
+                        /* Push the container to the custom Registry */
+                        registryImage.push()
                     }
                 }
             }
