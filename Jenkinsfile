@@ -116,13 +116,13 @@ pipeline {
             steps {
                 script {
                     // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
-                    docker.withRegistry("http://${registry}:5000") {
+                    docker.withRegistry("http://0.0.0.0:5000") {
                         def registryImage = docker.build("devops_lambda:0.4")
 
                         sh 'docker images'
-                        sh 'docker tag devops_lambda:0.4 34.246.121.175:5000/devops_labmda:latest'
+                        sh 'docker tag devops_lambda:0.4 0.0.0.0:5000/devops_labmda:latest'
                         sh 'docker images'
-                        sh 'docker push 34.246.121.175:5000/devops_labmda:latest'
+                        sh 'docker push 0.0.0.0:5000/devops_labmda:latest'
                     }
                 }
             }
