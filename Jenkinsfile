@@ -120,9 +120,9 @@ pipeline {
                         def registryImage = docker.build("devops_lambda:0.4")
 
                         sh 'docker images'
-                        sh 'docker tag devops_lambda:0.4 localhost:5000/devops_labmda:latest'
+                        sh 'docker tag devops_lambda:0.4 34.246.121.175:5000/devops_labmda:latest'
                         sh 'docker images'
-                        sh 'docker push localhost:5000/devops_labmda:latest'
+                        sh 'docker push 34.246.121.175:5000/devops_labmda:latest'
                     }
                 }
             }
