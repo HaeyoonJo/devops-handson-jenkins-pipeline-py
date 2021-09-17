@@ -122,7 +122,7 @@ pipeline {
         stage("deploy image registry") {
             steps {
                 script {
-                    docker.withRegistry() {
+                    docker.withRegistry(registry) {
                         registryImage.push()
                     }
                 }
