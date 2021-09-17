@@ -110,31 +110,22 @@ pipeline {
         //     }
         // }
 
-        // TEST docker registry
-        stage("Build img registry") {
+
+        stage("deploy image registry") {
             steps {
                 script {
-                    registryImage = docker.build + "/haeyoon:$BUILD_NUMBER"
+                    // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
+                    docker.withRegistry("http://${registry}") {
+                        def registryImage = docker.build("devops_lambda:0.4")
+
+                        sh 'docker images'
+                        sh 'docker tag devops_lambda:0.4 localhost:5000/devops_labmda:latest'
+                        sh 'docker images'
+                        sh 'docker push localhost:5000/devops_labmda:latest'
+                    }
                 }
-                sh 'docker images'
             }
         }
-
-        // stage("deploy image registry") {
-        //     steps {
-        //         script {
-        //             // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
-        //             docker.withRegistry("http://${registry}") {
-        //                 def registryImage = docker.build("devops_lambda")
-
-        //                 sh 'docker images'
-        //                 sh 'docker tag localhost:5000/devops_labmda'
-        //                 sh 'docker images'
-        //                 // registryImage.push("${VERSION_DEV}")
-        //             }
-        //         }
-        //     }
-        // }
 
         // Prod:
         //  Push image into ECR
