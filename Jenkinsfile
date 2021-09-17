@@ -23,7 +23,7 @@ pipeline {
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
-        REGISTRY_ECR_REPO_DEV = ""
+        REGISTRY_ECR_REPO_DEV = "34.246.121.175"
         VERSION = "latest"
         VERSION_DEV = "0.1"
         DOCKER_NETWORK = "lambda_net"
@@ -31,6 +31,8 @@ pipeline {
         LAMBDA_FUNCTION = "devops-lambda-pipeline"
         TEST_BUILD_IMAGE = "devops_lambda/test"
         MAP_PORT = 8080
+
+
     }
 
     stages {
@@ -72,9 +74,9 @@ pipeline {
         }
 
         stage("Login ECR") {
-            // when {
-            //     expression { "${BRANCH}" == 'origin/master' }
-            // }
+            when {
+                expression { "${BRANCH}" == 'origin/master' }
+            }
             steps {
                 withAWS(credentials: "${params.jenkins_credential}") {
                     sh """
@@ -98,16 +100,10 @@ pipeline {
             }
             steps {
                 script {
-                    // set docker registry on github
-                    // docker.withRegistry() {
-                    //     def myImage = docker.build()
-                    //     myImage.push("${VERSION_DEV}")
-                    // }
-
-                    // test push docker Image into ECR
-                    docker.withRegistry("http://${params.account_id}.${REGISTRY_ECR_REPO}") {
-                        def myImage = docker.build("${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}")
-                        myImage.push ("${VERSION}")
+                    // set docker registry on another EC2 or local docker container
+                    docker.withRegistry("http://${REGISTRY_ECR_REPO_DEV}:5000") {
+                        def myImage = docker.build("localhost:5000/lambda_function")
+                        myImage.push("${VERSION_DEV}")
                     }
                 }
             }
