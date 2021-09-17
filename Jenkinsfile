@@ -122,10 +122,10 @@ pipeline {
         stage("deploy image registry") {
             steps {
                 script {
-                    def imageName = "localhost:5000/${TEST_BUILD_IMAGE}:${VERSION_DEV}"
+                    // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
                     docker.withRegistry("http://${registry}") {
-                        def registryImage = docker.build(imageName)
-                        registryImage.push()
+                        def registryImage = docker.build("localhost:5000/devops_lambda")
+                        registryImage.push("${VERSION_DEV}")
                     }
                 }
             }
