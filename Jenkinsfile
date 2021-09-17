@@ -115,8 +115,8 @@ pipeline {
             steps {
                 script {
                     registryImage = docker.build + "/haeyoon:$BUILD_NUMBER"
-                    sh 'docker images'
                 }
+                sh 'docker images'
             }
         }
 
