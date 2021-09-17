@@ -24,8 +24,7 @@ pipeline {
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
-        registry = "34.246.121.175"
-        // registry = "localhost"
+        registry = "orcahaeyoon/jenkins_repo"
         VERSION = "latest"
         VERSION_DEV = "0.1"
         DOCKER_NETWORK = "lambda_net"
@@ -112,13 +111,19 @@ pipeline {
         //     }
         // }
 
-        stage("deploy image registry") {
+        stage("build img dockerhub") {
             steps {
                 script {
-                    docker.withRegistry("orcahaeyoon/jenkins_repo", "${params.dockerhub_credential}") {
-                        def registryImage = docker.build("devops_lambda:0.4")
-                        /* Push the container to the custom Registry */
-                        registryImage.push()
+                    dockerHubImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+
+        stage("deploy image dockerhub") {
+            steps {
+                script {
+                    docker.withRegistry('', "${params.dockerhub_credential}") {
+                        dockerHubImage.push()
                     }
                 }
             }
