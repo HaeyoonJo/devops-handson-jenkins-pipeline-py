@@ -24,6 +24,7 @@ pipeline {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
         registry = "34.246.121.175"
+        // registry = "localhost"
         VERSION = "latest"
         VERSION_DEV = "0.1"
         DOCKER_NETWORK = "lambda_net"
@@ -115,7 +116,7 @@ pipeline {
             steps {
                 script {
                     // def imageName = "localhost:5000/${TEST_BUILD_IMAGE}"
-                    docker.withRegistry("http://${registry}") {
+                    docker.withRegistry("http://${registry}:5000") {
                         def registryImage = docker.build("devops_lambda:0.4")
 
                         sh 'docker images'
