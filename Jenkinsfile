@@ -110,20 +110,21 @@ pipeline {
         //     }
         // }
 
-        // TEST docker registry
-        stage("Build img registry") {
-            steps {
-                script {
-                    registryImage = docker.build registry + ":$BUILD_NUMBER"
-                }
-            }
-        }
+        // // TEST docker registry
+        // stage("Build img registry") {
+        //     steps {
+        //         script {
+        //             registryImage = docker.build registry + ":$BUILD_NUMBER"
+        //         }
+        //     }
+        // }
 
         stage("deploy image registry") {
             steps {
                 script {
                     docker.withRegistry("http://${registry}") {
-                        registryImage.push()
+                        def registryImageTest = docker.build("localhost:5000/${TEST_BUILD_IMAGE}:${VERSION_DEV}")
+                        registryImageTest.push()
                     }
                 }
             }
