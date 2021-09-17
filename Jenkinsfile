@@ -26,15 +26,12 @@ pipeline {
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
         REGISTRY = "orcahaeyoon/jenkins_repo"
         VERSION = "latest"
-        VERSION_DEV = "0.1"
+        VERSION_DEV = 0.1
         DOCKER_NETWORK = "lambda_net"
         DOCKER_NETWORK_ALIAS = "lambda"
         LAMBDA_FUNCTION = "devops-lambda-pipeline"
         TEST_BUILD_IMAGE = "devops_lambda/test"
         MAP_PORT = 8080
-
-        BUILD_NUMBER = 0.2
-
     }
 
     stages {
@@ -43,7 +40,6 @@ pipeline {
             steps {
                 script {
                     testLocalImage = docker.build("${TEST_BUILD_IMAGE}:${VERSION_DEV}")
-                    sh "docker images"
                 }
             }
         }
@@ -72,6 +68,26 @@ pipeline {
                     }
                 }
                 sh "docker network rm ${DOCKER_NETWORK}"
+                sh "docker rmi ${TEST_BUILD_IMAGE}:${VERSION_DEV}"
+            }
+        }
+
+        // Docker registry on github
+        //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
+        // dev:
+        //  Push image into docker registry on Github
+        stage("Deploy Image Registry") {
+            when {
+                expression { "${BRANCH}" == 'origin/dev' }
+            }
+            steps {
+                script {
+                    dockerHubImage = docker.build REGISTRY + ":$VERSION_DEV"
+                    docker.withRegistry('', "${params.dockerhub_credential}") {
+                        dockerHubImage.push()
+                    }
+                    sh "docker rmi ${REGISTRY}:${VERSION_DEV}"
+                }
             }
         }
 
@@ -91,25 +107,7 @@ pipeline {
                 }
             }
         }
-
-        // Docker registry on github
-        //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
-        // dev:
-        //  Push image into docker registry on Github
-        stage("Deploy Image Registry") {
-            when {
-                expression { "${BRANCH}" == 'origin/dev' }
-            }
-            steps {
-                script {
-                    dockerHubImage = docker.build REGISTRY + ":$BUILD_NUMBER"
-                    docker.withRegistry('', "${params.dockerhub_credential}") {
-                        dockerHubImage.push()
-                    }
-                }
-            }
-        }
-
+        
         // Prod:
         //  Push image into ECR
         stage("Deploy Image ECR") {
@@ -122,6 +120,7 @@ pipeline {
                         def myImage = docker.build("${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}")
                         myImage.push ("${VERSION}")
                     }
+                    sh "docker rmi ${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}:${VERSION}"
                 }
             }
         }
