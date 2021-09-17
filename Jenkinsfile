@@ -111,14 +111,13 @@ pipeline {
         // }
 
         // TEST docker registry
-        stage("Build img registry") {
-            steps {
-                script {
-                    registryImage = docker.build registry + ":$BUILD_NUMBER"
-                    sh 'docker tag '
-                }
-            }
-        }
+        // stage("Build img registry") {
+        //     steps {
+        //         script {
+        //             registryImage = docker.build registry + ":$BUILD_NUMBER"
+        //         }
+        //     }
+        // }
 
         stage("deploy image registry") {
             steps {
