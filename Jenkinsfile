@@ -45,7 +45,9 @@ pipeline {
             //         args "-e MYSQL_ROOT_PASSWORD=root"
             //     }
             // }
+            
             steps {
+                sh 'docker rmi mysql:latest'
                 script {
                     docker.image('mysql:latest').withRun('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"') { c ->
                         docker.image('mysql:latest').inside("--link ${c.id}:db") {
@@ -54,11 +56,10 @@ pipeline {
                         }
                     }
                 }
-                steps {
-                    sh "docker logs ${c.id}"
-                    sh 'docker rmi mysql:latest'
-                }
+                sh "docker logs ${c.id}"
+                sh 'docker rmi mysql:latest'
             }
+
         }
 
         // stage('mysql test') {
