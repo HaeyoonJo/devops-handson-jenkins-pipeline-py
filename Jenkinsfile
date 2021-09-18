@@ -12,7 +12,7 @@ https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-failure
 >>>>>>>
 */
 pipeline {
-    agent none
+    agent any
 
     parameters {
         string(name: "account_id", description: "AWS accountID")
@@ -37,12 +37,12 @@ pipeline {
     stages {
 
         stage("building mysql") {
-            agent {
-                docker {
-                    image 'mysql'
-                    reuseNode true
-                    args "-e MYSQL_ROOT_PASSWORD=root"
-                }
+            // agent {
+            //     docker {
+            //         image 'mysql'
+            //         reuseNode true
+            //         args "-e MYSQL_ROOT_PASSWORD=root"
+            //     }
             }
             steps {
                 script {
