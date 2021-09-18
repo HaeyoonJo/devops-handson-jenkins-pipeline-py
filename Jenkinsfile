@@ -35,33 +35,30 @@ pipeline {
     }
 
     stages {
-        stage('rm all image') {
-            steps {
-                sh 'docker ps -a'
-                sh 'docker images'
-                // sh 'docker rmi -f $(docker images -a -q)'
-            }
-        }
 
         // docker run -p 3306:3306 --name mysql_80 -e MYSQL_ROOT_PASSWORD=password -d mysql:8 mysqld --default-authentication-plugin=mysql_native_password
-        // stage("building mysql") {
-        //     // agent {
-        //     //     docker {
-        //     //         image 'mysql'
-        //     //         reuseNode true
-        //     //         args "-e MYSQL_ROOT_PASSWORD=root"
-        //     //     }
-        //     // }
-        //     steps {
-        //         script {
-        //             docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
-        //                 docker.image('mysql:latest').inside("--link ${c.id}:db") {
-        //                     sh 'mysql -u root -p'
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage("building mysql") {
+            // agent {
+            //     docker {
+            //         image 'mysql'
+            //         reuseNode true
+            //         args "-e MYSQL_ROOT_PASSWORD=root"
+            //     }
+            // }
+            steps {
+                script {
+                    docker.image('mysql:latest').withRun('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root" mysqld --default-authentication-plugin=mysql_native_password') { c ->
+                        docker.image('mysql:latest').inside("--link ${c.id}:db") {
+                            sh 'mysql -u root -p'
+                        }
+                    }
+                }
+                steps {
+                    sh "docker logs ${c.id}"
+                    sh 'docker rmi mysql:latest'
+                }
+            }
+        }
 
         // stage('mysql test') {
         //     agent {
