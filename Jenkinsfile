@@ -51,6 +51,7 @@ pipeline {
                 script {
                     docker.image('mysql:latest').withRun('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"') { c ->
                         docker.image('mysql:latest').inside() {
+                            sh 'sleep 60'
                             sh 'mysqld --default-authentication-plugin=mysql_native_password'
                         }
                     }
