@@ -35,25 +35,30 @@ pipeline {
     }
 
     stages {
-
-        stage("building mysql") {
-            // agent {
-            //     docker {
-            //         image 'mysql'
-            //         reuseNode true
-            //         args "-e MYSQL_ROOT_PASSWORD=root"
-            //     }
-            // }
+        stage('rm all image') {
             steps {
-                script {
-                    docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
-                        docker.image('mysql:latest').inside("--link ${c.id}:db") {
-                            sh 'mysql -u root -p'
-                        }
-                    }
-                }
+                sh 'docker rmi $(docker images -a -q)'
             }
         }
+
+        // stage("building mysql") {
+        //     // agent {
+        //     //     docker {
+        //     //         image 'mysql'
+        //     //         reuseNode true
+        //     //         args "-e MYSQL_ROOT_PASSWORD=root"
+        //     //     }
+        //     // }
+        //     steps {
+        //         script {
+        //             docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
+        //                 docker.image('mysql:latest').inside("--link ${c.id}:db") {
+        //                     sh 'mysql -u root -p'
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('mysql test') {
         //     agent {
