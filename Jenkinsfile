@@ -35,16 +35,34 @@ pipeline {
     }
 
     stages {
-        stage('mysql test') {
+
+        stage("building mysql") {
             agent {
                 docker {
                     image 'mysql'
                     reuseNode true
                     args "-e MYSQL_ROOT_PASSWORD=root"
-                    command "--default-authentication-plugin=mysql_native_password"
+                }
+            }
+            steps {
+                script {
+                    docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
+                        sh 'while ! mysqladmin ping -h0.0.0.0 --silent; do sleep 1; done'
+                    }
                 }
             }
         }
+
+        // stage('mysql test') {
+        //     agent {
+        //         docker {
+        //             image 'mysql'
+        //             reuseNode true
+        //             args "-e MYSQL_ROOT_PASSWORD=root"
+        //             command "--default-authentication-plugin=mysql_native_password"
+        //         }
+        //     }
+        // }
     }
 
     // stages {
