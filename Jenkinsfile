@@ -37,7 +37,7 @@ pipeline {
     stages {
         stage('rm all image') {
             steps {
-                sh 'docker rmi $(docker images -a -q)'
+                sh 'docker rmi -f $(docker images -a -q)'
             }
         }
 
