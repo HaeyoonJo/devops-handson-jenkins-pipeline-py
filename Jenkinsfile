@@ -43,7 +43,7 @@ pipeline {
             //         reuseNode true
             //         args "-e MYSQL_ROOT_PASSWORD=root"
             //     }
-            }
+            // }
             steps {
                 script {
                     docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
