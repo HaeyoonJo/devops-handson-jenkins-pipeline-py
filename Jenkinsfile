@@ -18,14 +18,15 @@ pipeline {
         string(name: "account_id", description: "AWS accountID")
         string(name: "jenkins_credential", description: "Jenkins Credential")
         string(name: "ecr_repo_name", description: "ECR Repo name")
+        string(name: "dockerhub_credential", description: "DockerHub Credential")
     }
 
     environment {
         BRANCH = "${env.GIT_BRANCH}"
         REGISTRY_ECR_REPO = "dkr.ecr.eu-west-1.amazonaws.com"
-        REGISTRY_ECR_REPO_DEV = ""
+        REGISTRY = "orcahaeyoon/jenkins_repo"
         VERSION = "latest"
-        VERSION_DEV = "0.1"
+        VERSION_DEV = 0.1
         DOCKER_NETWORK = "lambda_net"
         DOCKER_NETWORK_ALIAS = "lambda"
         LAMBDA_FUNCTION = "devops-lambda-pipeline"
@@ -39,7 +40,6 @@ pipeline {
             steps {
                 script {
                     testLocalImage = docker.build("${TEST_BUILD_IMAGE}:${VERSION_DEV}")
-                    sh "docker images"
                 }
             }
         }
@@ -68,13 +68,33 @@ pipeline {
                     }
                 }
                 sh "docker network rm ${DOCKER_NETWORK}"
+                sh "docker rmi ${TEST_BUILD_IMAGE}:${VERSION_DEV}"
+            }
+        }
+
+        // Docker registry on github
+        //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
+        // dev:
+        //  Push image into docker registry on Github
+        stage("Deploy Image Registry") {
+            when {
+                expression { "${BRANCH}" == 'origin/dev' }
+            }
+            steps {
+                script {
+                    dockerHubImage = docker.build REGISTRY + ":$VERSION_DEV"
+                    docker.withRegistry('', "${params.dockerhub_credential}") {
+                        dockerHubImage.push()
+                    }
+                    sh "docker rmi ${REGISTRY}:${VERSION_DEV}"
+                }
             }
         }
 
         stage("Login ECR") {
-            // when {
-            //     expression { "${BRANCH}" == 'origin/master' }
-            // }
+            when {
+                expression { "${BRANCH}" == 'origin/master' }
+            }
             steps {
                 withAWS(credentials: "${params.jenkins_credential}") {
                     sh """
@@ -87,35 +107,10 @@ pipeline {
                 }
             }
         }
-
-        // Docker registry on github
-        //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
-        // dev:
-        //  Push image into docker registry on Github
-        stage("PushImageRegistry") {
-            when {
-                expression { "${BRANCH}" == 'origin/dev' }
-            }
-            steps {
-                script {
-                    // set docker registry on github
-                    // docker.withRegistry() {
-                    //     def myImage = docker.build()
-                    //     myImage.push("${VERSION_DEV}")
-                    // }
-
-                    // test push docker Image into ECR
-                    docker.withRegistry("http://${params.account_id}.${REGISTRY_ECR_REPO}") {
-                        def myImage = docker.build("${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}")
-                        myImage.push ("${VERSION}")
-                    }
-                }
-            }
-        }
-
+        
         // Prod:
         //  Push image into ECR
-        stage("PushImageECR") {
+        stage("Deploy Image ECR") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
@@ -125,13 +120,14 @@ pipeline {
                         def myImage = docker.build("${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}")
                         myImage.push ("${VERSION}")
                     }
+                    sh "docker rmi ${params.account_id}.${REGISTRY_ECR_REPO}/${params.ecr_repo_name}:${VERSION}"
                 }
             }
         }
 
         // Prod:
         //  Deploy on Lambda
-        stage("Deploy") {
+        stage("Deploy Lambda") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
