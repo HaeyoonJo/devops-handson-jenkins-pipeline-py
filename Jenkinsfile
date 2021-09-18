@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     docker.image('mysql:latest').withRun('-e "MYSQL_ROOT_PASSWORD=root"') { c ->
-                        docker.image('mysql:5').inside("--link ${c.id}:db") {
+                        docker.image('mysql:latest').inside("--link ${c.id}:db") {
                             sh 'mysql --default-authentication-plugin=mysql_native_password'
                         }
                     }
