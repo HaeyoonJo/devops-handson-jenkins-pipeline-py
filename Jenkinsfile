@@ -37,17 +37,24 @@ pipeline {
     stages {
 
         // docker run -p 3306:3306 --name mysql_80 -e MYSQL_ROOT_PASSWORD=password -d mysql:8 mysqld --default-authentication-plugin=mysql_native_password
-        stage("Build MySQL Image") {
+        stage("building mysql") {
+            agent {
+                docker {
+                    image 'mysql:latest'
+                    reuseNode true
+                }
+            }
+            
             steps {
                 script {
-                    docker.image('mysql:latest').run('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') {                        
+                    docker.image('mysql:latest').run('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') { c ->
+                        sh 'docker ps -a'
+                        sh 'docker images'
                     }
                 }
                 sh 'docker rmi mysql:latest'
             }
-
         }
-
 
         // stage('mysql test') {
         //     agent {
