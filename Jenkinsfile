@@ -41,7 +41,6 @@ pipeline {
             agent {
                 docker {
                     image 'mysql:latest'
-                    reuseNode true
                 }
             }
             
@@ -49,10 +48,10 @@ pipeline {
                 script {
                     docker.image('mysql:latest').run('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') { c ->
                         sh 'docker ps -a'
-                        sh 'docker images'
+                        // sh 'docker images'
                     }
                 }
-                sh 'docker rmi mysql:latest'
+                // sh 'docker rmi mysql:latest'
             }
         }
 
