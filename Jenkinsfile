@@ -47,15 +47,9 @@ pipeline {
         }
 
         stage("running image") {
-            // agent {
-            //     docker {
-            //         image 'mysql:latest'
-            //     }
-            // }
-            
             steps {
                 script {
-                    mysqlImage.run('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') {
+                    mysqlImage.run('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') {c ->
                         sh 'docker ps -a'
                     }
                 }
