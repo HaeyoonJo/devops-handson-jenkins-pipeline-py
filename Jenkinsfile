@@ -72,10 +72,9 @@ pipeline {
             }
         }
 
-        // Docker registry on github
-        //    https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
-        // dev:
-        //  Push image into docker registry on Github
+        // Docker registry
+        //    Github: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
+        //    Docker Hub: Currently in use
         stage("Deploy Image Registry") {
             when {
                 expression { "${BRANCH}" == 'origin/dev' }
@@ -107,9 +106,7 @@ pipeline {
                 }
             }
         }
-        
-        // Prod:
-        //  Push image into ECR
+
         stage("Deploy Image ECR") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
@@ -125,8 +122,6 @@ pipeline {
             }
         }
 
-        // Prod:
-        //  Deploy on Lambda
         stage("Deploy Lambda") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
@@ -141,6 +136,18 @@ pipeline {
                 }
             }
         }
+
+
+        // docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -d mysql:latest  --default-authentication-plugin=mysql_native_password
+        // stage("running image") {
+        //     steps {
+        //         script {
+        //             docker.image('mysql:latest').withRun('-p 3306:3306 -e "MYSQL_ROOT_PASSWORD=root"', '--default-authentication-plugin=mysql_native_password') {c ->
+        //                 sh 'docker ps -a'
+        //             }
+        //         }
+        //     }
+        // }
 
     }
 }
