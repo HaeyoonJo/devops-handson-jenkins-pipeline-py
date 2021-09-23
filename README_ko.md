@@ -43,7 +43,7 @@ Constants 변수란, 값이 변경될 수 없는 변수들을 의미하며, 일�
 
 6. Login ECR
 
-- aws-pipeline의 `withAWS()` 메소드를 사용하여, `sh` 블록안에서 AWS ECR 레파지토리로 로그인하는 aws-cli를 실행한다. 해당 명령문은 ECR 콘솔에서 "푸쉬 명령 보기" 팝업창에서 복사했으며, 다음과 같은 구조로 명령을 실행할 수 있다.
+- aws-pipeline의 `withAWS()` 함수를 사용하여, `sh` 블록안에서 AWS ECR 레파지토리로 로그인하는 aws-cli를 실행한다. 해당 명령문은 ECR 콘솔에서 "푸쉬 명령 보기" 팝업창에서 복사했으며, 다음과 같은 구조로 명령을 실행할 수 있다.
 ```
 aws ecr get-login-password \
     --region "YOUR_REGION" \

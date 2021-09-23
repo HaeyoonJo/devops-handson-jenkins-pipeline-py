@@ -38,3 +38,14 @@ In the attached architecture image below, you can estimate of what resources is 
 5. RIE Test
 
 - Python app is being generated as docker image and upload into Lambda function. In order for running test can be done by [RIE (Runtime Interface Emulator)](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html), which AWS supports.
+
+6. Login ECR
+
+- Using `withAWS()` of aws-pipeline, you can execute command that logging into and let you able to access its ECR using `sh` within the `withAWS()` function. the command you want to insert is on ECR Console, then you can copy from the pop-up page. For instance, you can execute the command as below:
+```
+aws ecr get-login-password \
+    --region "YOUR_REGION" \
+    | docker login \
+    --username AWS \
+    --password-stdin "YOUR ECR REPO URI"
+```
