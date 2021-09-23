@@ -14,16 +14,9 @@ Scripted 문법은 유연하게 프로그래밍적으로 접근이 가능하도�
 도커라이징된 파이썬 어플리케이션을 AWS Lambda function에서 실행시키고, 로컬 테스트 및 배포는 브랜치 전략과 함께 젠킨스파일에 구성된 Jenkins pipeline을 통해 CICD pipeline을 구현하였다.  
 아래 이미지에서는 사용된 리소스와 파이프라인 단계를 살펴보면서, 각 단계에서 어떤 작업이 이루어지는지 추정을 할 수 있다.  
 
+> Image should be updated following new Jenkinsfile
+
 <img src="./images/jenkins_pipeline.png" width="1000">
-
-<!-- Another way to add image source>
-<!-- ![jenkins-pipeline](./images/jenkins_pipeline.png)
-
-<style type="text/css">
-    img {
-        width: 1000px;
-    }
-</style> -->
 
 ### Jenkins Pipeline 설명
 
@@ -35,14 +28,14 @@ Agent는 any로 정의하여, Jenkins pipeline 실행을 어느 환경에서든�
 
 - Jenkins job에서 설정된 파라미터를 받는다. 보안관점에서 공개되지 않아야할 Credentials같은 변수들을 설정함으로써, 협업이나 보안문제에서 자유롭도록 하였다.
 
-3. environment
+3. Environment
 
 - Jenkinsfile에서 사용할 Constants 변수들을 선언하였다.  
 Constants 변수란, 값이 변경될 수 없는 변수들을 의미하며, 일종의 변경불가능한 값들을 저장한 가방에 모아서 관리할 수가 있다.
 
 4. Build
 
-- [Docker pipeline](https://plugins.jenkins.io/docker-workflow/)의 `docker.build()` 메소드를 사용하여 도커이미지를 빌드한다.
+- [Docker pipeline](https://plugins.jenkins.io/docker-workflow/)의 `docker.build()` 함수를 사용하여 도커이미지를 빌드한다. 이 외에 다른 함수들을 [pipeline-syntax](https://opensource.triology.de/jenkins/pipeline-syntax/globals) 페이지에서도 확인가능하다.
 
 5. RIE Test
 
@@ -50,7 +43,7 @@ Constants 변수란, 값이 변경될 수 없는 변수들을 의미하며, 일�
 
 6. Login ECR
 
-- aws-pipeline의 `withAWS()` 메소드를 사용하여, `sh` 블록안에서 AWS ECR 레파지토리로 로그인하는 aws-cli를 실행한다. 해당 명령문은 ECR 콘솔에서 "푸쉬 명령 보기" 팝업창에서 복사했으며, 다음과 같은 구조로 명령을 실행할 수 있다.
+- aws-pipeline의 `withAWS()` 함수를 사용하여, `sh` 블록안에서 AWS ECR 레파지토리로 로그인하는 aws-cli를 실행한다. 해당 명령문은 ECR 콘솔에서 "푸쉬 명령 보기" 팝업창에서 복사했으며, 다음과 같은 구조로 명령을 실행할 수 있다.
 ```
 aws ecr get-login-password \
     --region "YOUR_REGION" \
