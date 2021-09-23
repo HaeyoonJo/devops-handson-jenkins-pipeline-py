@@ -16,3 +16,25 @@ In the attached architecture image below, you can estimate of what resources is 
 > Image should be updated following new Jenkinsfile
 
 <img src="./images/jenkins_pipeline.png" width="1000">
+
+### Jenkins Pipeline
+
+1. Agent
+
+- I specified `any` agent, so the Jenkins pipeline can be run in any available environment. You can take a look about Agent parameters by visiting Jenkins [Agent parameters](https://www.jenkins.io/doc/book/pipeline/syntax/#agent-parameters) docs.
+
+2. Parameters
+
+- the pipeline gets the parameters from Jenkins job that has configured in the Jenkins configuration, In order to keep the critical data such as credentials in security purpose. By that, I expect making easier to collaborate and reduce security issues that might be incur.
+
+3. Environment
+
+- Declared Constants variables to be used in the Jenkinsfile.
+
+4. Build
+
+- building docker image using `docker.build()` by [Docker pipeline](https://plugins.jenkins.io/docker-workflow/). You can also take a look other functions for pipeline script in the following [pipeline-syntax](https://opensource.triology.de/jenkins/pipeline-syntax/globals) page
+
+5. RIE Test
+
+- Python app is being generated as docker image and upload into Lambda function. In order for running test can be done by [RIE (Runtime Interface Emulator)](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html), which AWS supports.
