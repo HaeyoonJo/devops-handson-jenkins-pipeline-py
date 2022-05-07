@@ -19,6 +19,9 @@ pipeline {
         string(name: "jenkins_credential", description: "Jenkins Credential")
         string(name: "ecr_repo_name", description: "ECR Repo name")
         string(name: "dockerhub_credential", description: "DockerHub Credential")
+        gitParameter name: 'git_tag',
+                     type: 'PT_TAG',
+                     defaultValue: 'master'
     }
 
     environment {
