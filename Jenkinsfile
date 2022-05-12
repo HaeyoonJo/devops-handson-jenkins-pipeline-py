@@ -38,8 +38,21 @@ pipeline {
     }
 
     stages {
+        
+        stage("GetTag") {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "${params.git_tag}"]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [],
+                          gitTool: 'Default',
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[url: "${params.git_url}"]]
+                        ])
+            }
+        }
 
-        stage("Build") {
+        stage("BuildDocker") {
             steps {
                 script {
                     testLocalImage = docker.build("${TEST_BUILD_IMAGE}:${VERSION_DEV}")
@@ -55,7 +68,7 @@ pipeline {
                 2. Docker container connection refused
                     check the issue by visiting https://github.com/HaeyoonJo/devops-handson-jenkins-pipeline-py/issues/1
         */
-        stage("RIE Test") {
+        stage("RunRIE") {
             steps {
                 script {
                     sh "docker network create --driver bridge ${DOCKER_NETWORK} || true"
@@ -78,7 +91,7 @@ pipeline {
         // Docker registry
         //    Github: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-docker-registry
         //    Docker Hub: Currently in use
-        stage("Deploy Image Registry") {
+        stage("DeployImgOnDockerhub") {
             when {
                 expression { "${BRANCH}" == 'origin/dev' }
             }
@@ -93,7 +106,7 @@ pipeline {
             }
         }
 
-        stage("Login ECR") {
+        stage("LoginECR") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
@@ -110,7 +123,7 @@ pipeline {
             }
         }
 
-        stage("Deploy Image ECR") {
+        stage("DeployImgOnECR") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
@@ -125,7 +138,7 @@ pipeline {
             }
         }
 
-        stage("Deploy Lambda") {
+        stage("DeployLambda") {
             when {
                 expression { "${BRANCH}" == 'origin/master' }
             }
