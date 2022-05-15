@@ -14,6 +14,9 @@ https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#handling-failure
 pipeline {
     agent any
 
+    
+    /* Add defaultValue in the string parameters in case if needed. For instance, Jenkins credential, and Dockerhub credential, etc */
+    /* And review the other parameters can be handled in other way around. Maybe ONLY ECR repo name can be opened to public */
     parameters {
         string(name: "account_id", description: "AWS accountID")
         string(name: "jenkins_credential", description: "Jenkins Credential")
